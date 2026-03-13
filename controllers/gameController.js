@@ -19,10 +19,10 @@ async function startGame(req, res) {
     ];
 
     currentGame = {
-        deck,
-        playerCards,
-        dealerCards
-      };
+      deck,
+      playerCards,
+      dealerCards
+    };
 
     // pontszám
     res.json({
@@ -44,78 +44,82 @@ async function startGame(req, res) {
 }
 //lapkeres
 async function hit(req, res) {
-    if (!currentGame) {
-      return res.status(400).json({ message: "Nincs aktív játék" });
-    }
-  
-    const newCard = deckService.drawCard(currentGame.deck);
-    currentGame.playerCards.push(newCard);
-  
-    const playerScore = deckService.calculateScore(currentGame.playerCards);
-  
-    // ellenőrzés: bust
-    let status = "continue"; // játék folytatódik
-    let result = "Még húzhatsz lapot ha kérsz!";
-  
-    if (playerScore > 21) {
-      status = "bust";
-      result = "Player bust! Dealer nyert";
-      // a játékot itt véget lehet vetni
-      currentGame = null; 
-    }
-  
-    res.json({
-      newCard,
-      playerCards: currentGame ? currentGame.playerCards : null,
-      playerScore,
-      status,
-      result
-    });
+  if (!currentGame) {
+    return res.status(400).json({ message: "Nincs aktív játék" });
+  }
+
+  const newCard = deckService.drawCard(currentGame.deck);
+  currentGame.playerCards.push(newCard);
+
+  const playerScore = deckService.calculateScore(currentGame.playerCards);
+
+  let status = "continue";
+  let result = "Még húzhatsz lapot ha kérsz!";
+
+  if (playerScore > 21) {
+    status = "bust";
+    result = "Player bust! Dealer nyert";
+  }
+
+  res.json({
+    newCard,
+    playerCards: currentGame.playerCards,
+    dealerCards: currentGame.dealerCards,
+    playerScore,
+    dealerScore: deckService.calculateScore(currentGame.dealerCards),
+    status,
+    result
+  });
+
+  // csak válasz után töröljük
+  if (playerScore > 21) {
+    currentGame = null;
+  }
 }
 //a gép 17nél megáll
 async function stand(req, res) {
 
-    if (!currentGame) {
-      return res.status(400).json({ message: "Nincs aktív játék" });
-    }
-  
-    // Dealer húz 17-ig
-    let dealerScore = deckService.calculateScore(currentGame.dealerCards);
-  
-    while (dealerScore < 17) {
-      const newCard = deckService.drawCard(currentGame.deck);
-      currentGame.dealerCards.push(newCard);
-      dealerScore = deckService.calculateScore(currentGame.dealerCards);
-    }
-  
-    const playerScore = deckService.calculateScore(currentGame.playerCards);
-  
-    // Eredmény meghatározása
-    let result = "";
-  
-    if (playerScore > 21) {
-      result = "Player bust! Dealer nyert";
-    } else if (dealerScore > 21) {
-      result = "Dealer bust! Player nyert";
-    } else if (playerScore > dealerScore) {
-      result = "Player nyert";
-    } else if (playerScore < dealerScore) {
-      result = "Dealer nyert";
-    } else {
-      result = "Döntetlen";
-    }
-  
-    // JSON válasz
-    res.json({
-      playerCards: currentGame.playerCards,
-      dealerCards: currentGame.dealerCards,
-      playerScore,
-      dealerScore,
-      result
-    });
-  
-    // Játék vége – memóriából törölheted, vagy hagyhatod statisztikának
-    currentGame = null;
+  if (!currentGame) {
+    return res.status(400).json({ message: "Nincs aktív játék" });
+  }
+
+  // Dealer húz 17-ig
+  let dealerScore = deckService.calculateScore(currentGame.dealerCards);
+
+  while (dealerScore < 17) {
+    const newCard = deckService.drawCard(currentGame.deck);
+    currentGame.dealerCards.push(newCard);
+    dealerScore = deckService.calculateScore(currentGame.dealerCards);
+  }
+
+  const playerScore = deckService.calculateScore(currentGame.playerCards);
+
+  // Eredmény meghatározása
+  let result = "";
+
+  if (playerScore > 21) {
+    result = "Player bust! Dealer nyert";
+  } else if (dealerScore > 21) {
+    result = "Dealer bust! Player nyert";
+  } else if (playerScore > dealerScore) {
+    result = "Player nyert";
+  } else if (playerScore < dealerScore) {
+    result = "Dealer nyert";
+  } else {
+    result = "Döntetlen";
+  }
+
+  // JSON válasz
+  res.json({
+    playerCards: currentGame.playerCards,
+    dealerCards: currentGame.dealerCards,
+    playerScore,
+    dealerScore,
+    result
+  });
+
+  // Játék vége – memóriából törölheted, vagy hagyhatod statisztikának
+  currentGame = null;
 }
 module.exports = {
   startGame,
