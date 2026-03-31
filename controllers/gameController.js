@@ -1,6 +1,8 @@
 const deckService = require("../services/deckService");
 let currentGame = null;
+const games = {};
 
+//21
 //jatek inditasa
 async function startGame(req, res) {
 
@@ -53,28 +55,24 @@ async function hit(req, res) {
 
   const playerScore = deckService.calculateScore(currentGame.playerCards);
 
-  let status = "continue";
+  // ellenőrzés: bust
+  let status = "continue"; // játék folytatódik
   let result = "Még húzhatsz lapot ha kérsz!";
 
   if (playerScore > 21) {
     status = "bust";
     result = "Player bust! Dealer nyert";
+    // a játékot itt véget lehet vetni
+    currentGame = null;
   }
 
   res.json({
     newCard,
-    playerCards: currentGame.playerCards,
-    dealerCards: currentGame.dealerCards,
+    playerCards: currentGame ? currentGame.playerCards : null,
     playerScore,
-    dealerScore: deckService.calculateScore(currentGame.dealerCards),
     status,
     result
   });
-
-  // csak válasz után töröljük
-  if (playerScore > 21) {
-    currentGame = null;
-  }
 }
 //a gép 17nél megáll
 async function stand(req, res) {
@@ -121,6 +119,8 @@ async function stand(req, res) {
   // Játék vége – memóriából törölheted, vagy hagyhatod statisztikának
   currentGame = null;
 }
+
+
 module.exports = {
   startGame,
   hit,
