@@ -8,6 +8,7 @@ const userRoutes = require('./routes/userRoutes')
 const voteRoutes = require('./routes/voteRoutes')
 const uploadRoutes = require('./routes/uploadRoutes')
 const gameRoutes = require("./routes/gameRoutes")
+const adminRoutes=require("./routes/adminRoutes")
 
 const app=express()
 
@@ -25,5 +26,6 @@ app.use('/users', userRoutes)
 app.use('/api/votes', voteRoutes)
 app.use('/api', uploadRoutes)
 app.use('/api/game', gameRoutes)
+app.use('/api/deleteUser',adminRoutes)
 
 module.exports = app

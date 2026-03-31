@@ -13,8 +13,13 @@ async function createUser(username, email, hash) {
     const [result] = await db.query(sql, [username, email, hash])
     //console.log(result);
     return {insertId: result.insertId}
-
-    
 }
 
-module.exports = { findByEmail, createUser }
+async function deleteUserById(user_id) {
+    const sql = 'DELETE FROM user WHERE user_id = ?';
+    const [result] = await db.query(sql, [user_id]);
+  
+    return result;
+  }
+
+module.exports = { findByEmail, createUser,deleteUserById }
