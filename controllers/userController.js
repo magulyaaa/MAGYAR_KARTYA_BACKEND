@@ -1,5 +1,5 @@
 const { path } = require('../app')
-const { findByEmail, createUser, getAllUser,userEdit } = require('../models/userModel')
+const { findByEmail, createUser, getAllUser,userEdit ,userDelete} = require('../models/userModel')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { config } = require('../config/dotenvConfig')
@@ -123,4 +123,23 @@ async function editUser(req,res){
     }
 }
 
-module.exports = { register, login, whoAmI, logout ,allUser,editUser}
+async function deleteUser(req, res) {
+    try {
+        const { user_id } = req.params
+        //console.log(user_id)
+
+        const result = await userDelete(user_id)
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'A felhasználó nem található' })
+        }
+
+        return res.status(200).json({ message: 'Sikeres törlés' })
+        
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({ error: 'felhasználó törlése server oldali hiba' })
+    }
+}
+
+module.exports = { register, login, whoAmI, logout ,allUser,editUser,deleteUser}
