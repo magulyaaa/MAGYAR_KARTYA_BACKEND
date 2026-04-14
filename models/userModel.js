@@ -27,7 +27,20 @@ async function getAllUser(){
     const [result]=await db.query(sql)
   
     return result
-  }
-  
+}
 
-module.exports = { findByEmail, createUser,deleteUserById,getAllUser }
+async function userEdit(user_id, username, email, role) {
+    const sql = 'UPDATE user SET user_name = ?, email = ?, role = ? WHERE user_id = ?'
+    const [result] = await db.query(sql, [username, email, role, user_id])
+    
+    return result
+}
+
+async function userDelete(user_id) {
+    const sql = 'DELETE FROM user WHERE user_id = ?'
+    const [result] = await db.query(sql, [user_id])
+
+    return result
+}
+
+module.exports = { findByEmail, createUser,deleteUserById,getAllUser,userEdit,userDelete }
