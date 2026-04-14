@@ -20,6 +20,14 @@ async function deleteUserById(user_id) {
     const [result] = await db.query(sql, [user_id]);
   
     return result;
-  }
+}
 
-module.exports = { findByEmail, createUser,deleteUserById }
+async function getAllUser(){
+    const sql='SELECT * FROM user'
+    const [result]=await db.query(sql)
+  
+    return result
+  }
+  
+
+module.exports = { findByEmail, createUser,deleteUserById,getAllUser }

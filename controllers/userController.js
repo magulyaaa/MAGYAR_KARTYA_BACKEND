@@ -1,5 +1,5 @@
 const { path } = require('../app')
-const { findByEmail, createUser } = require('../models/userModel')
+const { findByEmail, createUser, getAllUser } = require('../models/userModel')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { config } = require('../config/dotenvConfig')
@@ -91,5 +91,15 @@ async function whoAmI(req, res) {
 async function logout(req, res) {
     return res.clearCookie(config.COOKIE_NAME, { path: '/' }).status(200).json({ message: 'Sikeres kilépés' })
 }
+//osszes user lekerese
+async function allUser(req,res){
+    try {
+        const result=await getAllUser()
 
-module.exports = { register, login, whoAmI, logout }
+        return res.status(200).json(result)
+    } catch (error) {
+        return res.status(500).json({error:'összes user lekerese szerver oldali hiba!'})
+    }
+}
+
+module.exports = { register, login, whoAmI, logout ,allUser}
