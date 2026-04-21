@@ -1,6 +1,6 @@
 const { path } = require('../app')
 const { findByEmail, createUser } = require('../models/userModel')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { config } = require('../config/dotenvConfig')
 const { deleteUserById } = require('../models/userModel')
