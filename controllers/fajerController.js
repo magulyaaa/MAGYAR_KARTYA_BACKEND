@@ -3,33 +3,33 @@ let game = {
     bot: { hand: [] },
     table: [],
     deck: [],
-    phase: "idle", // idle | playing | lastRound | finished
     turn: "player",
-    result: null
+    gameOver: false,
+    result: null,
+    playerScore: 0,
+    botScore: 0
 }
 
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-
-        const temp = array[i]
-        array[i] = array[j]
-        array[j] = temp
-    }
-    return array
+const valuePoints = {
+    "also": 2,
+    "felso": 3,
+    "kiraly": 4,
+    "asz": 11
 }
+
 
 function createDeck() {
-    const suits = ["hearts", "diamonds", "clubs", "spades"]
-    const values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
+    const suits = ["makk", "tok", "zold", "piros"]
+    const values = ["also", "felso", "kiraly", "asz"]
 
     const deck = []
 
-    for (let suit of suits) {
-        for (let value of values) {
+    for (let s of suits) {
+        for (let v of values) {
             deck.push({
-                suit: suit,
-                value: value
+                suit: s,
+                value: v,
+                id: `${s}_${v}`
             })
         }
     }
@@ -37,53 +37,169 @@ function createDeck() {
     return deck
 }
 
+function shuffle(deck) {
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+            ;[deck[i], deck[j]] = [deck[j], deck[i]]
+    }
+}
+function fajerStart(req, res) {
+    const deck = createDeck()
+    shuffle(deck)
 
-async function fajerStart(req, res) {
-    game.deck = await shuffle(createDeck())
+    game.deck = deck
 
-    game.player.hand = game.deck.splice(0, 3)
-    game.bot.hand = game.deck.splice(0, 3)
-    game.table = game.deck.splice(0, 3)
+    game.player.hand = deck.splice(0, 3)
+    game.bot.hand = deck.splice(0, 3)
+    game.table = deck.splice(0, 4)
 
-    game.phase = "playing"
     game.turn = "player"
+    game.gameOver = false
+    game.result = null
 
-    res.json(game)
+    console.log("GAME STARTED")
+
+    return res.json(game)
 }
 
-async function swapCard(req, res) {
+function playerMove(req, res) {
+    if (game.turn !== "player") {
+        return res.json({ error: "Not player turn" })
+    }
+
     const { handIndex, tableIndex } = req.body
+
+    if (
+        game.player.hand[handIndex] == null ||
+        game.table[tableIndex] == null
+    ) {
+        return res.json({ error: "Invalid move" })
+    }
 
     const temp = game.player.hand[handIndex]
     game.player.hand[handIndex] = game.table[tableIndex]
     game.table[tableIndex] = temp
 
-    res.json(game)
-}
-
-async function botMove() {
-    const hi = Math.floor(Math.random() * 3)
-    const ti = Math.floor(Math.random() * 3)
-
-    const temp = game.bot.hand[hi]
-    game.bot.hand[hi] = game.table[ti]
-    game.table[ti] = temp
-}
-
-async function pass(req, res) {
-    game.phase = "finished"
-    finishGame()
+    game.turn = "bot"
 
     res.json(game)
 }
 
-async function finishGame() {
-    const playerScore = evaluateHand(game.player.hand)
-    const botScore = evaluateHand(game.bot.hand)
+function botMove(req, res) {
+    if (game.turn !== "bot") {
+        return res.json({ error: "Not bot turn" })
+    }
 
-    if (playerScore > botScore) game.result = "player"
-    else if (botScore > playerScore) game.result = "bot"
-    else game.result = "draw"
+    if (!game.bot.hand.length || !game.table.length) {
+        return res.json({ error: "Invalid state" })
+    }
+
+    const handIndex = Math.floor(Math.random() * game.bot.hand.length)
+    const tableIndex = Math.floor(Math.random() * game.table.length)
+
+    if (
+        game.bot.hand[handIndex] == null ||
+        game.table[tableIndex] == null
+    ) {
+        return res.json({ error: "Invalid card" })
+    }
+
+    const temp = game.bot.hand[handIndex]
+    game.bot.hand[handIndex] = game.table[tableIndex]
+    game.table[tableIndex] = temp
+
+    game.turn = "player"
+
+    res.json(game)
+}
+function getHandValue(hand) {
+    let sum = 0
+    let hasAce = false
+
+    for (let card of hand) {
+        if (!card) continue
+        sum += valuePoints[card.value]
+        if (card.value === "asz") hasAce = true
+    }
+
+    return { sum, hasAce }
 }
 
-module.exports = { fajerStart, swapCard, botMove, pass, finishGame }
+function evaluateHand(hand) {
+    const { sum, hasAce } = getHandValue(hand)
+
+    const values = hand.map(c => c.value)
+    const suits = hand.map(c => c.suit)
+
+    const allSameSuit = suits.every(s => s === suits[0])
+    const allSameValue = values.every(v => v === values[0])
+
+    const aceCount = values.filter(v => v === "asz").length
+    const tenValueCards = values.filter(v =>
+        ["kiraly", "felso"].includes(v)
+    ).length
+
+    // 🔥 31 (fájer): ász + két 10-es értékű kártya azonos színből
+    if (
+        aceCount === 1 &&
+        tenValueCards === 2 &&
+        allSameSuit
+    ) {
+        return { score: 31, type: "faier" }
+    }
+
+    // 🔥 3 ász
+    if (aceCount === 3) {
+        return { score: 33, type: "three_aces" }
+    }
+
+    // 🔥 2 ász
+    if (aceCount === 2) {
+        return { score: 22, type: "two_aces" }
+    }
+
+    // 🔥 3 egyforma figura
+    if (allSameValue) {
+        return { score: 30 + sum, type: "three_of_kind" }
+    }
+
+    // 🔥 3 azonos szín
+    if (allSameSuit) {
+        return { score: sum, type: "same_suit" }
+    }
+
+    // default
+    return { score: sum, type: "normal" }
+}
+
+function getResult(req, res) {
+    const player = evaluateHand(game.player.hand)
+    const bot = evaluateHand(game.bot.hand)
+
+    let result = "draw"
+
+    if (player.score > bot.score) {
+        result = "player wins"
+    } else if (bot.score > player.score) {
+        result = "bot wins"
+    } else {
+        // 🔥 döntetlen esetén erősebb lapok
+        result = "draw (compare cards)"
+    }
+
+    game.result = result
+
+    res.json({
+        player: {
+            hand: game.player.hand,
+            evaluation: player
+        },
+        bot: {
+            hand: game.bot.hand,
+            evaluation: bot
+        },
+        result
+    })
+}
+
+module.exports = { fajerStart, playerMove, botMove,getResult }
