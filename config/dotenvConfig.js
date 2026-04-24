@@ -1,7 +1,7 @@
 const dotenv=require('dotenv')
 
 dotenv.config()
-
+//Biztonsági beállítások
 const config={
     HOST:process.env.HOST,
     PORT:process.env.PORT,

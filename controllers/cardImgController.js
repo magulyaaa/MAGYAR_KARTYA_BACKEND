@@ -1,5 +1,6 @@
 const { allPicture, uploadPicture } = require('../models/cardImgModel')
 
+//az összes kártya lekérésére szolgál/szolgált
 const getAllpictures = async (req, res) => {
     try {
         const result = await allPicture()
@@ -10,6 +11,7 @@ const getAllpictures = async (req, res) => {
     }
 }
 
+//a kártya képeinek feltöltésére szolgál/szolgált
 const postPicture = async (req, res) => {
     try {
         const { card_name, card_color } = req.body;

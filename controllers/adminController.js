@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const { config } = require('../config/dotenvConfig')
 const { deleteUserById } = require('../models/userModel')
 
+//felhasznalo törlése
 async function deleteUser(req, res) {
     try {
         const {user_id} = req.params
