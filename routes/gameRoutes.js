@@ -5,7 +5,7 @@ const gameController = require("../controllers/gameController");
 const fajerController=require("../controllers/fajerController")
 
 //21 jatek inditasa
-router.post("/21start", gameController.startGame);
+router.post("/start", gameController.startGame);
 router.post("/hit", gameController.hit);
 router.post("/stand", gameController.stand);
 
