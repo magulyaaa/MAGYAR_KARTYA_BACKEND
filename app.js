@@ -25,7 +25,8 @@ app.use(cors({
 app.use('/users', userRoutes)
 app.use('/api/votes', voteRoutes)
 app.use('/api', uploadRoutes)
-app.use('/api/game', gameRoutes)
+app.use('/api/21', gameRoutes)
+app.use('/api/fajer', gameRoutes)
 app.use('/api/deleteUser',adminRoutes)
 
 module.exports = app
