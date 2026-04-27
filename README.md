@@ -10,3 +10,11 @@ Az animációk és a megjelenése a játéknak,valamint a legtöbb ember számá
 ## Készíttte
 * Veres István (Backend, Sql Adatbázis)
 * [Github Repository](https://github.com/magulyaaa/MAGYAR_KARTYA_BACKEND)
+## Fejlesztési környezet
+* Node.js
+* MySql
+---
+| Név        | Kor | Város      |
+|------------|-----|------------|
+| Anna       | 25  | Budapest   |
+| Béla       | 30  | Debrecen   |
