@@ -14,7 +14,14 @@ Az animációk és a megjelenése a játéknak,valamint a legtöbb ember számá
 * Node.js
 * MySql
 ---
-| Név        | Kor | Város      |
-|------------|-----|------------|
-| Anna       | 25  | Budapest   |
-| Béla       | 30  | Debrecen   |
+## Adatbázis neve: magyar_kartya
+## Táblák:
+|cards| fajer_card | games | huszonegy_card | score_board | user | votes|
+|-------|------------|-------|----------------|-------------|------|------|
+|card_id|game_id|game_id|card_id|user_id|user_id|user_id|
+|card_name|card_id|game_name|game_id|game_id|user_name|game_id|
+|card_color|card_value||card_value|score|psw|
+|card_img||||time|email|
+|||||hearth|role|
+---
+
