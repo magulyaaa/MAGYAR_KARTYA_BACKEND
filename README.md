@@ -352,18 +352,13 @@ router.get('/results', getVotes);
 ---
 ## 🛠️ Használt Eszközök
 
-* VS Code  
-* MDN Web Docs  
+* VS Code    
 * NPM  
 * Postman  
 * DrawSQL  
-* W3Schools  
-* StackOverflow  
-* ChatGPT  
-* Tabnine  
+* W3Schools   
+* ChatGPT   
 * GitHub  
-* Google Drive  
-* Pterodactyl  
-* PhpMyAdmin  
-* Miro  
+* Google Drive
+* PhpMyAdmin   
 
