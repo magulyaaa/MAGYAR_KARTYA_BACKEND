@@ -1,9 +1,9 @@
 const jwt=require('jsonwebtoken')
 const {config}=require('../config/dotenvConfig')
 
+//megvizsgalja hogy admin e a felhasznalo
 const admin = (req, res, next) => {
     try {
-      // feltételezzük hogy authMiddleware már betette a usert
       if (!req.user) {
         return res.status(401).json({ message: 'Nincs bejelentkezve' });
       }

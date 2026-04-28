@@ -28,7 +28,6 @@ async function getAllUser(){
   
     return result
 }
-
 async function userEdit(user_id, username, email, role) {
     const sql = 'UPDATE user SET user_name = ?, email = ?, role = ? WHERE user_id = ?'
     const [result] = await db.query(sql, [username, email, role, user_id])

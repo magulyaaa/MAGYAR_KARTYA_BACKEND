@@ -1,6 +1,7 @@
 const jwt=require('jsonwebtoken')
 const {config}=require('../config/dotenvConfig')
 
+//megvizsgalja hogy be van e jelentkezve a felhasznalo
 function auth(req,res,next){
     const token=req.cookies?.[config.COOKIE_NAME]
     //console.log(token);
