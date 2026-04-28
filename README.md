@@ -346,6 +346,8 @@ router.get('/results', getVotes);
 ## Tesztelés
 <img width="1281" height="801" alt="image" src="https://github.com/user-attachments/assets/61df93c7-41fb-44d9-ad93-a8c5f4ab5351" />
 
+[tesztelés](https://documenter.getpostman.com/view/42502470/2sBXqJJzut)
+
 ---
 ### A projekt jelenleg manuálisan tesztelt és tesztelhető a Postman segítségével.
 
