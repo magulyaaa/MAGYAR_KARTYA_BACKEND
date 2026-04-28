@@ -1,6 +1,7 @@
 const mysql = require('mysql2/promise')
 const {config}=require('../config/dotenvConfig')
 
+//betölti adatbázisba a titkositott adatokat
 const db = mysql.createPool({
     host: config.DB_HOST,
     user: config.DB_USER,
