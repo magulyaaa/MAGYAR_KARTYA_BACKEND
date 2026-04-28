@@ -79,6 +79,7 @@ function playerMove(req, res) {
 
     //a cserélni kivant kartya azonositojat es a masik kartya azonositojat body-ban kell megadni
     const { handIndex, tableIndex } = req.body
+    console.log(handIndex,tableIndex);
 
     //ha nincs ilyen azonosito nem engedélyezi a cserét
     if (
