@@ -114,7 +114,6 @@ Backend/
     "nodemon": "^3.1.11"
   }
 }
-package.json
 ```
 ---
 ## Biztonság
@@ -124,20 +123,8 @@ package.json
 * A .env fájl tartalmaz minden érzékeny adatot – ne oszd meg publikusan!
 ---
 
-# 🌐 WrathHound Backend API Dokumentáció
-
-A backend célja, hogy kommunikációs hidat biztosítson a frontend (web + játék) és az adatbázis között.
-
----
-
-
-# 🌐 WrathHound Backend API Dokumentáció
-
-A backend célja, hogy kommunikációs hidat biztosítson a frontend (web + játék) és az adatbázis között.
-
----
-
-## 🧭 Alap route-ok
+## 🧭 Végpontok
+###Az app.js -be meghívtuk az összes routes fájlt amik kezelik a szükséges útvonalakat
 
 ```js
 app.use('/game', express.static(path.join(__dirname, 'thegame')));
@@ -250,4 +237,133 @@ router.delete('/:game_id', auth, unvote);
 📌 Szavazat visszavonása
 
 router.get('/results', getVotes);
+```
+---
+
+## Admin művelet
+
+| Művelet        | HTTP | Végpont        | Leírás |
+|----------------|------|---------------|--------|
+| Törlés   | DELETE | `/users/:user_id` | Egy felhasználó törlése DE CSAK ADMINKÉNT LEHETSÉGES! |
+
+### 📋 Router definíciók
+```js
+router.delete("/users/:user_id",auth,admin, deleteUser)
+```
+---
+
+## 🎮 Játék végpontok
+
+### 🃏 21 játék
+
+| Művelet        | HTTP | Végpont     | Leírás |
+|----------------|------|------------|--------|
+| Játék indítása | POST | `/start`   | Új 21 játék indítása |
+| Lap húzás      | POST | `/hit`     | Új lap húzása |
+| Megállás       | POST | `/stand`   | Kör befejezése |
+
+### 🔥 Fajer játék
+
+| Művelet        | HTTP | Végpont          | Leírás |
+|----------------|------|------------------|--------|
+| Játék indítása | POST | `/fajerStart`    | Fajer játék indítása |
+| Játékos csere  | POST | `/player-swap`   | Játékos lépése |
+| Bot csere      | POST | `/bot-swap`      | Bot lépése |
+| Eredmény       | GET  | `/result`        | Játék eredmény lekérdezése |
+
+### 📋 Router definíciók
+
+```js
+// 21 játék
+router.post("/start", gameController.startGame);
+router.post("/hit", gameController.hit);
+router.post("/stand", gameController.stand);
+
+// fajer játék
+router.post("/fajerStart", fajerController.fajerStart);
+router.post("/player-swap", fajerController.playerMove);
+router.post("/bot-swap", fajerController.botMove);
+router.get("/result", fajerController.getResult);
+```
+---
+
+## 🖼️ Képek végpontok
+
+| Művelet            | HTTP | Végpont                    | Leírás |
+|--------------------|------|----------------------------|--------|
+| Képek lekérdezése  | GET  | `/getPicture`              | Összes kép lekérdezése |
+| Kép feltöltése     | POST | `/postPicture/:card_id`    | Kép feltöltése adott kártyához |
+
+### 📋 Router definíciók
+
+```js
+router.get('/getPicture', getAllpictures);
+router.post('/postPicture/:card_id', upload.single('pic'), postPicture);
+```
+---
+
+## 👤 Felhasználó végpontok
+
+| Művelet                | HTTP   | Végpont                    | Leírás |
+|------------------------|--------|----------------------------|--------|
+| Regisztráció           | POST   | `/register`                | Új felhasználó létrehozása |
+| Bejelentkezés          | POST   | `/login`                   | Felhasználó bejelentkezése |
+| Aktuális felhasználó   | GET    | `/whoami`                  | Bejelentkezett felhasználó adatai |
+| Kijelentkezés          | POST   | `/logout`                  | Felhasználó kijelentkezése |
+| Összes felhasználó     | GET    | `/getAllUser`              | Összes felhasználó lekérdezése (admin) |
+| Felhasználó módosítása | PUT    | `/admin/edit/:user_id`     | Felhasználó szerkesztése (admin) |
+| Felhasználó törlése    | DELETE | `/admin/delete/:user_id`   | Felhasználó törlése (admin) |
+
+### 📋 Router definíciók
+
+```js
+router.post('/register', register);
+router.post('/login', login);
+router.get('/whoami', auth, whoAmI);
+router.post('/logout', logout);
+router.get('/getAllUser', auth, admin, allUser);
+router.put('/admin/edit/:user_id', auth, admin, editUser);
+router.delete('/admin/delete/:user_id', auth, admin, deleteUser);
+```
+---
+
+## 🗳️ Szavazás végpontok
+
+| Művelet        | HTTP   | Végpont         | Leírás |
+|----------------|--------|-----------------|--------|
+| Szavazás       | POST   | `/:game_id`     | Szavazás egy játékra |
+| Szavazás törlés| DELETE | `/:game_id`     | Szavazat visszavonása |
+| Eredmények     | GET    | `/results`      | Szavazások eredménye |
+
+### 📋 Router definíciók
+
+```js
+router.post('/:game_id', auth, vote);
+router.delete('/:game_id', auth, unvote);
+router.get('/results', getVotes);
+```
+---
+## Tesztelés
+<img width="1281" height="801" alt="image" src="https://github.com/user-attachments/assets/61df93c7-41fb-44d9-ad93-a8c5f4ab5351" />
+
+---
+### A projekt jelenleg manuálisan tesztelt és tesztelhető a Postman segítségével.
+
+---
+## 🛠️ Használt Eszközök
+
+* VS Code  
+* MDN Web Docs  
+* NPM  
+* Postman  
+* DrawSQL  
+* W3Schools  
+* StackOverflow  
+* ChatGPT  
+* Tabnine  
+* GitHub  
+* Google Drive  
+* Pterodactyl  
+* PhpMyAdmin  
+* Miro  
 
